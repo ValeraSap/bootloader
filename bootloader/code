@@ -1,0 +1,42 @@
+mov ESI, message
+mov EDI, 0b8000h
+mov ECX, 18
+
+rep movsb
+jmp $
+
+message: db "152535455565758595"
+
+.loop:
+	lodsb
+	or al,al
+	jz halt
+	or eax,0x0F00 
+	mov word [ebx], ax
+	add ebx,2
+	jmp .loop
+halt:
+	cli
+	hlt
+
+
+
+call delta
+delta:
+pop ebx
+add ebx, USER_PM_CODE_START-delta
+
+mov esi, ebx
+mov edi, USER_PM_CODE_BASE_ADDRESS
+mov ecx, USER_PM_CODE_SIZE
+rep movsb
+
+mov eax, USER_PM_CODE_BASE_ADDRESS
+jmp eax
+
+
+USER_PM_CODE_START:
+;org USER_PM_CODE_BASE_ADDRESS
+
+;%include 'PM_CODE.ASM'
+USER_PM_CODE_END:
